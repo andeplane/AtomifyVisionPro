@@ -6,9 +6,12 @@
 //
 
 import SwiftUI
-
+// import LAMMPS
 @main
 struct AtomifyApp: App {
+    init() {
+//        LAMMPSBridge.runLAMMPS()
+    }
     var body: some Scene {
         WindowGroup {
             ContentView()
