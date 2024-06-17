@@ -1,7 +1,8 @@
 #import "LammpsController.h"
-#include "library.h" // Assuming LAMMPS provides a C API header
-#include "lammps.h"
-#include "atom.h"
+#include "src/library.h" // Assuming LAMMPS provides a C API header
+#include "src/lammps.h"
+#include "src/atom.h"
+#include "src/domain.h"
 
 @implementation LammpsController
 
@@ -15,7 +16,7 @@
     if (self = [super init]) {
         self.lammpsObject = NULL;
         self.numAtoms = 0;
-        self.atomTypes = 0;
+        self.atomTypes = nil;
         self.positions = nil;
         [self reset];
     }
@@ -31,7 +32,8 @@
     }
     
     int version;
-    const char *lmpargv[] = { "liblammps", "-log", "none"};
+    const char *lmpargv[] = { "liblammps", "-log", "none", "-sc", "none"};
+//    const char *lmpargv[] = { "liblammps", "-log", "none"};
     int lmpargc = sizeof(lmpargv)/sizeof(const char *);
 
     /* create LAMMPS instance */
@@ -42,50 +44,30 @@
         return;
     }
 
-    /* get and print numerical version code */
     version = lammps_version(self.lammpsObject);
     printf("LAMMPS Version: %d\n",version);
 
-    // Assume some method to update numAtoms, atomTypes, positions from lammpsObject
     self.numAtoms = 0;
-//    self.positions = malloc(self.numAtoms * sizeof(double) * 3); // Assuming 3D coordinates
-//    lammps_gather_atoms(self.lammpsObject, "x", 1, 3, self.positions);
 }
 
-- (void) initializeLJ {
-    const char *script =
-    "# 3d Lennard-Jones melt\n"
-    "\n"
-    "variable    x index 1\n"
-    "variable    y index 1\n"
-    "variable    z index 1\n"
-    "\n"
-    "variable    xx equal 6*$x\n"
-    "variable    yy equal 6*$y\n"
-    "variable    zz equal 6*$z\n"
-    "\n"
-    "units       lj\n"
-    "atom_style  atomic\n"
-    "\n"
-    "lattice     fcc 0.8442\n"
-    "region      box block 0 ${xx} 0 ${yy} 0 ${zz}\n"
-    "create_box  1 box\n"
-    "create_atoms 1 box\n"
-    "mass        1 1.0\n"
-    "\n"
-    "velocity    all create 1.44 87287 loop geom\n"
-    "\n"
-    "pair_style  lj/cut 2.5\n"
-    "pair_coeff  1 1 1.0 1.0 2.5\n"
-    "\n"
-    "neighbor    0.3 bin\n"
-    "neigh_modify delay 0 every 20 check no\n"
-    "\n"
-    "fix         1 all nve\n"
-    "\n";
-    lammps_commands_string(self.lammpsObject, script);
-    [self synchronize];
+- (void) initializeWater {
+    // Get the main bundle path
+    NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
+    NSString *simulationFolderPath =[bundlePath stringByAppendingString:@"/simulations/water/vapor"];
+    // Append the specific path to the bundle path
+    NSString *fullPath = [simulationFolderPath stringByAppendingString:@"/vapor.in"];
+
+    // Convert the NSString to a C-style string
+    const char *cFullPath = [fullPath UTF8String];
+    NSLog(@"Simulation path: %@", simulationFolderPath);
     
+    // Try to change the current directory
+    [[NSFileManager defaultManager] changeCurrentDirectoryPath:simulationFolderPath];
+    
+    lammps_file(self.lammpsObject, cFullPath);
+    lammps_command(self.lammpsObject, "timestep 0.0002");
+    
+    [self synchronize];
 }
 
 - (void)step {
@@ -100,24 +82,38 @@
     } else {
         LAMMPS_NS::LAMMPS *lammps = (LAMMPS_NS::LAMMPS *)self.lammpsObject;
         LAMMPS_NS::Atom *atom = lammps->atom;
+        LAMMPS_NS::Domain *domain = lammps->domain;
+        
         self.numAtoms = atom->natoms;
-        NSLog(@"Synchronized with %d atoms ", self.numAtoms);
         
         if (self.positions && self.positions.count != self.numAtoms) {
             // Need to reallocate
             self.positions = nil;
         }
+        
+        if (self.atomTypes && self.atomTypes.count != self.numAtoms) {
+            // Need to reallocate
+            self.atomTypes = nil;
+        }
+        
         if (!self.positions) {
             self.positions = [[NSMutableArray alloc] initWithCapacity:3 * self.numAtoms]; // x, y, z
         }
-        double **lammpsPositions = atom->x;
+        if (!self.atomTypes) {
+            self.atomTypes = [[NSMutableArray alloc] initWithCapacity: self.numAtoms];
+        }
+        
         for (int i = 0; i < self.numAtoms; i++) {
-            double x = atom->x[i][0];
-            double y = atom->x[i][1];
-            double z = atom->x[i][2];
-            self.positions[3*i+0] = @(x);
-            self.positions[3*i+1] = @(y);
-            self.positions[3*i+2] = @(z);
+            double position[3];
+            position[0] = atom->x[i][0];
+            position[1] = atom->x[i][1];
+            position[2] = atom->x[i][2];
+            domain->remap(position); // remap into system boundaries with PBC
+            
+            self.positions[3*i+0] = @(position[0]);
+            self.positions[3*i+1] = @(position[1]);
+            self.positions[3*i+2] = @(position[2]);
+            self.atomTypes[i] = @(atom->type[i]);
         }
         
     }

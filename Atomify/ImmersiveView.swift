@@ -3,13 +3,15 @@ import RealityKit
 
 struct ImmersiveView: View {
     @StateObject private var lammps = LammpsWrapper()
+    @State private var oxygenEntities: [ModelEntity] = []
+    @State private var hydrogenEntities: [ModelEntity] = []
     @State private var atomEntities: [ModelEntity] = []
     
     var body: some View {
         RealityView { content in
             let sceneAnchor = AnchorEntity()
             content.add(sceneAnchor)
-            sceneAnchor.position = [-5, -5, -10]
+            sceneAnchor.position = [-80, -77, -100]
             startUpdatingPositions(sceneAnchor: sceneAnchor)
         }
     }
@@ -18,21 +20,37 @@ struct ImmersiveView: View {
         Timer.scheduledTimer(withTimeInterval: 0.001, repeats: true) { timer in
             lammps.step()
             lammps.synchronize()
-            
-            print("Count of entities \(atomEntities.count) and num atoms \(lammps.numAtoms)")
-            if (atomEntities.count != lammps.numAtoms) {
-                print("Did not have renderables. Creating meshes...")
-                for _ in 0..<lammps.numAtoms {
-                    let atom = ModelEntity(mesh: .generateSphere(radius: 0.2), materials: [SimpleMaterial(color: .red, isMetallic: false)])
-                    atom.position = [0, 0, 0]
-                    atomEntities.append(atom)
-                    sceneAnchor.addChild(atom)
+            if (oxygenEntities.count == 0) {
+                let oxygenMaterial = SimpleMaterial(color: .red, isMetallic: false)
+                let hydrogenMaterial = SimpleMaterial(color: .white, isMetallic: false)
+                for index in 0..<lammps.numAtoms {
+                    if (lammps.atomTypes[index] == 1) {
+                        let atom = ModelEntity(mesh: .generateSphere(radius: 0.5), materials: [oxygenMaterial])
+                        atom.position = [0, 0, 0]
+                        oxygenEntities.append(atom)
+                        sceneAnchor.addChild(atom)
+                    } else {
+                        let atom = ModelEntity(mesh: .generateSphere(radius: 0.4), materials: [hydrogenMaterial])
+                        atom.position = [0, 0, 0]
+                        hydrogenEntities.append(atom)
+                        sceneAnchor.addChild(atom)
+                    }
                 }
             }
             
-            for (index, atom) in atomEntities.enumerated() {
+            var hydrogenCount = 0
+            var oxygenCount = 0
+            for index in 0..<lammps.numAtoms {
                 let position = lammps.positions[index]
-                atom.position = [position.x, position.y, position.z]
+                let atomType = lammps.atomTypes[index]
+                if (atomType == 1) {
+                    // Oxygen
+                    oxygenEntities[oxygenCount].position = [position.x, position.y, position.z]
+                    oxygenCount += 1
+                } else {
+                    hydrogenEntities[hydrogenCount].position = [position.x, position.y, position.z]
+                    hydrogenCount += 1
+                }
             }
         }
     }
