@@ -1,12 +1,12 @@
 import SwiftUI
 
-struct SelectedSimulationKey: EnvironmentKey {
-    static let defaultValue: Simulation? = nil
+struct LammpsWrapperKey: EnvironmentKey {
+    static let defaultValue: LammpsWrapper? = LammpsWrapper()
 }
 
 extension EnvironmentValues {
-    var selectedSimulation: Simulation? {
-        get { self[SelectedSimulationKey.self] }
-        set { self[SelectedSimulationKey.self] = newValue }
+    var lammpsController: LammpsWrapper {
+        get { self[LammpsWrapperKey.self]! }
+        set { self[LammpsWrapperKey.self] = newValue }
     }
 }

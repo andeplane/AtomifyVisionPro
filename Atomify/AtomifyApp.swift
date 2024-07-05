@@ -11,7 +11,7 @@ import Foundation
 @main
 struct AtomifyApp: App {
     @State private var selectedSimulation: Simulation? = nil
-
+    @StateObject private var lammpsController = LammpsWrapper()
     @State private var atomStyle: ImmersionStyle = .full
     init() {
         // Example usage:
@@ -47,7 +47,7 @@ struct AtomifyApp: App {
             ImmersiveView()
         }
         .immersionStyle(selection: $atomStyle, in: .full)
-        .environment(\.selectedSimulation, selectedSimulation) // Pass the selected simulation
+        .environment(\.lammpsController, lammpsController) // Pass the selected simulation
     }
     
     private func handleNewSimulationChange(newSelectedSimulation: Simulation?) {

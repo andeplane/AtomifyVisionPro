@@ -2,7 +2,7 @@ import SwiftUI
 import RealityKit
 
 struct ImmersiveView: View {
-    @StateObject private var lammps = LammpsWrapper()
+    @Environment(\.lammpsController) var lammps
     @State private var oxygenEntities: [ModelEntity] = []
     @State private var hydrogenEntities: [ModelEntity] = []
     @State private var atomEntities: [ModelEntity] = []
