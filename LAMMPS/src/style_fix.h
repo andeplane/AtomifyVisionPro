@@ -114,8 +114,6 @@
 #include "fix_tune_kspace.h"
 #include "fix_vector.h"
 #include "fix_viscous.h"
-#include "fix_wall_gran.h"
-#include "fix_wall_gran_region.h"
 #include "fix_wall_harmonic.h"
 #include "fix_wall_lj1043.h"
 #include "fix_wall_lj126.h"
