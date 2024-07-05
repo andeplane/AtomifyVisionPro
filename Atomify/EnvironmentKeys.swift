@@ -1,8 +1,12 @@
-//
-//  EnvironmentKeys.swift
-//  Atomify
-//
-//  Created by Anders Hafreager on 05/07/2024.
-//
+import SwiftUI
 
-import Foundation
+struct SelectedSimulationKey: EnvironmentKey {
+    static let defaultValue: Simulation? = nil
+}
+
+extension EnvironmentValues {
+    var selectedSimulation: Simulation? {
+        get { self[SelectedSimulationKey.self] }
+        set { self[SelectedSimulationKey.self] = newValue }
+    }
+}

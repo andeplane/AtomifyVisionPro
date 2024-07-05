@@ -10,41 +10,48 @@ import Foundation
 // import LAMMPS
 @main
 struct AtomifyApp: App {
+    @State private var selectedSimulation: Simulation? = nil
+
     @State private var atomStyle: ImmersionStyle = .full
     init() {
-        let filepath = Bundle.main.path(forResource: "vapor", ofType: "data", inDirectory: "simulations/water/vapor")
-        print("Path: \(filepath)")
-        
-        let filepath2 = Bundle.main.path(forResource: "vapor", ofType: "data", inDirectory: "Atomify")
-        print("Path: \(filepath2)")
-        
-        let path = "\(Bundle.main.resourcePath!)/Atomify/simulations/water/vapor/vapor.data"
-        print("Second path: \(path)")
+        // Example usage:
         do {
-            let text =
-                try String(contentsOfFile: path, encoding: String.Encoding.utf8)
-        } catch {
-            print("No file actually")
-        }
-        
-        let resourceURL = Bundle.main.resourceURL!
-
-        do {
-            let resourceContents = try FileManager.default.contentsOfDirectory(at: resourceURL, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
-            for url in resourceContents {
-                print(url.path)
+            if let simulations = try Simulation.loadSimulations() {
+                for simulation in simulations {
+                    print("Simulation ID: \(simulation.id)")
+                    print("Title: \(simulation.title)")
+                    print("Description: \(simulation.description)")
+                    print("Analysis Description: \(simulation.analysisDescription ?? "N/A")")
+                    print("Input Script: \(simulation.inputScript)")
+                    print("Keywords: \(simulation.keywords)")
+                    print("Files: \(simulation.files.map { $0.fileName })")
+                    if let image = simulation.imageFile {
+                        print("Image loaded successfully")
+                    }
+                }
             }
         } catch {
-            print("Error: \(error)")
+            print("An error occurred: \(error.localizedDescription)")
         }
+
     }
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(selectedSimulation: $selectedSimulation)
+            .onChange(of: selectedSimulation) { newSelectedSimulation in
+                handleNewSimulationChange(newSelectedSimulation: newSelectedSimulation)
+            }
         }
 
         ImmersiveSpace(id: "ImmersiveSpace") {
             ImmersiveView()
-        }.immersionStyle(selection: $atomStyle, in: .full)
+        }
+        .immersionStyle(selection: $atomStyle, in: .full)
+        .environment(\.selectedSimulation, selectedSimulation) // Pass the selected simulation
+    }
+    
+    private func handleNewSimulationChange(newSelectedSimulation: Simulation?) {
+        print("State changed to: \(String(describing: newSelectedSimulation?.title))")
+        // Add any additional actions you want to perform on state change here
     }
 }

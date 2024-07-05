@@ -1,34 +1,51 @@
-//
-//  ContentView.swift
-//  Atomify
-//
-//  Created by Anders Hafreager on 15/06/2024.
-//
-
 import SwiftUI
 import RealityKit
 import RealityKitContent
 
 struct ContentView: View {
-
     @State private var showImmersiveSpace = false
     @State private var immersiveSpaceIsShown = false
+    @State private var simulations: [Simulation] = []
+    @Binding var selectedSimulation: Simulation?
+
+
+    let columns: [GridItem] = [
+        GridItem(.flexible(minimum: 200)),
+        GridItem(.flexible(minimum: 200)),
+        GridItem(.flexible(minimum: 200))
+    ]
 
     @Environment(\.openImmersiveSpace) var openImmersiveSpace
     @Environment(\.dismissImmersiveSpace) var dismissImmersiveSpace
 
     var body: some View {
-        VStack {
-            Model3D(named: "Scene", bundle: realityKitContentBundle)
-                .padding(.bottom, 50)
+        ScrollView {
+            VStack(spacing: 20) {
+                Text("Welcome to Atomify")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .padding(.top, 20)
 
-            Text("Welcome to Atomify!")
+                Text("Please select a simulation to get started.")
+                    .font(.title2)
+                    .foregroundColor(.secondary)
 
-            Toggle("Start simulation", isOn: $showImmersiveSpace)
-                .font(.title)
-                .frame(width: 360)
-                .padding(24)
-                .glassBackgroundEffect()
+                LazyVGrid(columns: columns, spacing: 20) {
+                    ForEach(simulations) { simulation in
+                        SimulationCard(simulation: simulation, action: {
+                            selectedSimulation = simulation
+                            showImmersiveSpace = true
+                        }, cornerRadius: 5.0)
+                        .aspectRatio(3/2, contentMode: .fit)
+                        .frame(minWidth: 450, minHeight: 250)
+                    }
+                }
+                .padding()
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .onAppear {
+            loadSimulations()
         }
         .padding()
         .onChange(of: showImmersiveSpace) { _, newValue in
@@ -50,8 +67,20 @@ struct ContentView: View {
             }
         }
     }
+
+    private func loadSimulations() {
+        do {
+            if let loadedSimulations = try Simulation.loadSimulations() {
+                self.simulations = loadedSimulations
+            }
+        } catch {
+            print("Failed to load simulations: \(error.localizedDescription)")
+        }
+    }
 }
 
 #Preview(windowStyle: .automatic) {
-    ContentView()
+    @State var previewSelectedSimulation: Simulation? = nil
+
+    ContentView(selectedSimulation: $previewSelectedSimulation)
 }

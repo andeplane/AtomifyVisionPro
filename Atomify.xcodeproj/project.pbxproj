@@ -583,6 +583,8 @@
 		048AE00D2C384636006A357A /* atom_vec_full.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 048ADDD12C384636006A357A /* atom_vec_full.cpp */; };
 		048AE00F2C384716006A357A /* fix_wall_piston.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 048AE00E2C384716006A357A /* fix_wall_piston.cpp */; };
 		048AE2682C384B2B006A357A /* simulations in Resources */ = {isa = PBXBuildFile; fileRef = 048AE2672C384B2B006A357A /* simulations */; };
+		048AE26A2C385233006A357A /* SimulationCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048AE2692C385233006A357A /* SimulationCard.swift */; };
+		048AE26C2C3860D9006A357A /* EnvironmentKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048AE26B2C3860D9006A357A /* EnvironmentKeys.swift */; };
 		04BC7C212C1CFDF70086E5AB /* npair.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04BC79162C1CFDDE0086E5AB /* npair.cpp */; };
 		04BC7C222C1CFDF70086E5AB /* fix_nve_sphere.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04BC79192C1CFDDE0086E5AB /* fix_nve_sphere.cpp */; };
 		04BC7C232C1CFDF70086E5AB /* universe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04BC791A2C1CFDDE0086E5AB /* universe.cpp */; };
@@ -2159,6 +2161,8 @@
 		048AE2652C38476A006A357A /* packages_region.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = packages_region.h; path = src/packages_region.h; sourceTree = "<group>"; };
 		048AE2662C38476A006A357A /* pair_coul_wolf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pair_coul_wolf.h; path = src/pair_coul_wolf.h; sourceTree = "<group>"; };
 		048AE2672C384B2B006A357A /* simulations */ = {isa = PBXFileReference; lastKnownFileType = folder; path = simulations; sourceTree = "<group>"; };
+		048AE2692C385233006A357A /* SimulationCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulationCard.swift; sourceTree = "<group>"; };
+		048AE26B2C3860D9006A357A /* EnvironmentKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentKeys.swift; sourceTree = "<group>"; };
 		04BC79162C1CFDDE0086E5AB /* npair.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = npair.cpp; path = ../../../repos/lammps/src/npair.cpp; sourceTree = "<group>"; };
 		04BC79172C1CFDDE0086E5AB /* packages_body.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = packages_body.h; path = ../../../repos/lammps/src/packages_body.h; sourceTree = "<group>"; };
 		04BC79182C1CFDDE0086E5AB /* dihedral_hybrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dihedral_hybrid.h; path = ../../../repos/lammps/src/dihedral_hybrid.h; sourceTree = "<group>"; };
@@ -3002,6 +3006,8 @@
 				047157702C1CF94400150457 /* Preview Content */,
 				04BC7D9C2C1E1A7D0086E5AB /* LammpsWrapper.swift */,
 				048ADB922C384427006A357A /* Simulation.swift */,
+				048AE2692C385233006A357A /* SimulationCard.swift */,
+				048AE26B2C3860D9006A357A /* EnvironmentKeys.swift */,
 			);
 			path = Atomify;
 			sourceTree = "<group>";
@@ -5111,9 +5117,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				0471576B2C1CF94300150457 /* ContentView.swift in Sources */,
+				048AE26C2C3860D9006A357A /* EnvironmentKeys.swift in Sources */,
 				04BC7D9D2C1E1A7D0086E5AB /* LammpsWrapper.swift in Sources */,
 				048ADB932C384427006A357A /* Simulation.swift in Sources */,
 				047157692C1CF94300150457 /* AtomifyApp.swift in Sources */,
+				048AE26A2C385233006A357A /* SimulationCard.swift in Sources */,
 				0471576D2C1CF94300150457 /* ImmersiveView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
