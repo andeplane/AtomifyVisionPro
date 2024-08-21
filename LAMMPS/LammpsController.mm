@@ -72,7 +72,7 @@
 
 - (void)step {
     // Execute a single timestep
-    lammps_command(self.lammpsObject, "run 1 pre no post no");
+    lammps_command(self.lammpsObject, "run 1");
 }
 
 - (void)synchronize {
