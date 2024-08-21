@@ -32,8 +32,8 @@
     }
     
     int version;
-    const char *lmpargv[] = { "liblammps", "-log", "none", "-sc", "none"};
-//    const char *lmpargv[] = { "liblammps", "-log", "none"};
+//    const char *lmpargv[] = { "liblammps", "-log", "none", "-sc", "none"};
+    const char *lmpargv[] = { "liblammps", "-log", "none"};
     int lmpargc = sizeof(lmpargv)/sizeof(const char *);
 
     /* create LAMMPS instance */
