@@ -28,7 +28,6 @@
     if (self.lammpsObject != NULL) {
         lammps_close(self.lammpsObject);
         lammps_mpi_finalize();
-        lammps_close(self.lammpsObject);
     }
     
     int version;
@@ -68,6 +67,12 @@
     lammps_command(self.lammpsObject, "timestep 0.0002");
     
     [self synchronize];
+}
+
+- (void)initializeLJ {
+    // TODO: Implement Lennard-Jones initialization if needed
+    // This is a stub to prevent crashes when reset() is called
+    NSLog(@"initializeLJ not yet implemented");
 }
 
 - (void)step {
