@@ -113,23 +113,26 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-# LAMMPS build artifacts
-*.o
-*.a
-*.dylib
-*.so
+# LAMMPS and other compiled artifacts
 
-# Compiled Object files
+# Build system files
+.depend
+
+# Object files
+*.o
 *.slo
 *.lo
-*.o
 *.obj
 
 # Precompiled Headers
 *.gch
 *.pch
 
-# Compiled Dynamic libraries
+# Libraries
+*.a
+*.la
+*.lai
+*.lib
 *.so
 *.dylib
 *.dll
@@ -138,14 +141,7 @@ Temporary Items
 *.mod
 *.smod
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
 # Executables
 *.exe
 *.out
 *.app
-
