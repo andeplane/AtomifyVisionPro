@@ -12,12 +12,31 @@ struct ImmersiveView: View {
             let sceneAnchor = AnchorEntity()
             content.add(sceneAnchor)
             sceneAnchor.position = [-80, -77, -100]
+            createAtomEntities(sceneAnchor: sceneAnchor)
             startUpdatingPositions(sceneAnchor: sceneAnchor)
         }
         .onDisappear {
             // Invalidate timer when view disappears to prevent memory leaks
             simulationTimer?.invalidate()
             simulationTimer = nil
+        }
+    }
+
+    private func createAtomEntities(sceneAnchor: AnchorEntity) {
+        let oxygenMaterial = SimpleMaterial(color: .red, isMetallic: false)
+        let hydrogenMaterial = SimpleMaterial(color: .white, isMetallic: false)
+        for index in 0..<lammps.numAtoms {
+            if lammps.atomTypes[index] == 1 {
+                let atom = ModelEntity(mesh: .generateSphere(radius: 0.5), materials: [oxygenMaterial])
+                atom.position = [0, 0, 0]
+                oxygenEntities.append(atom)
+                sceneAnchor.addChild(atom)
+            } else {
+                let atom = ModelEntity(mesh: .generateSphere(radius: 0.4), materials: [hydrogenMaterial])
+                atom.position = [0, 0, 0]
+                hydrogenEntities.append(atom)
+                sceneAnchor.addChild(atom)
+            }
         }
     }
 
@@ -29,24 +48,6 @@ struct ImmersiveView: View {
             
             // Ensure UI updates happen on main thread
             DispatchQueue.main.async {
-                if oxygenEntities.count == 0 {
-                    let oxygenMaterial = SimpleMaterial(color: .red, isMetallic: false)
-                    let hydrogenMaterial = SimpleMaterial(color: .white, isMetallic: false)
-                    for index in 0..<lammps.numAtoms {
-                        if lammps.atomTypes[index] == 1 {
-                            let atom = ModelEntity(mesh: .generateSphere(radius: 0.5), materials: [oxygenMaterial])
-                            atom.position = [0, 0, 0]
-                            oxygenEntities.append(atom)
-                            sceneAnchor.addChild(atom)
-                        } else {
-                            let atom = ModelEntity(mesh: .generateSphere(radius: 0.4), materials: [hydrogenMaterial])
-                            atom.position = [0, 0, 0]
-                            hydrogenEntities.append(atom)
-                            sceneAnchor.addChild(atom)
-                        }
-                    }
-                }
-                
                 var hydrogenCount = 0
                 var oxygenCount = 0
                 for index in 0..<lammps.numAtoms {
