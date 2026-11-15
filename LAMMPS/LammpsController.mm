@@ -27,6 +27,7 @@
     // Deallocate any previous LAMMPS instance
     if (self.lammpsObject != NULL) {
         lammps_close(self.lammpsObject);
+        self.lammpsObject = NULL;
         lammps_mpi_finalize();
     }
     
