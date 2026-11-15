@@ -6,6 +6,7 @@ struct ImmersiveView: View {
     @State private var oxygenEntities: [ModelEntity] = []
     @State private var hydrogenEntities: [ModelEntity] = []
     @State private var simulationTimer: Timer?
+    @State private var sceneReady = false
     
     var body: some View {
         RealityView { content in
@@ -13,7 +14,12 @@ struct ImmersiveView: View {
             content.add(sceneAnchor)
             sceneAnchor.position = [-80, -77, -100]
             createAtomEntities(sceneAnchor: sceneAnchor)
-            startUpdatingPositions(sceneAnchor: sceneAnchor)
+            sceneReady = true
+            startUpdatingPositions()
+        }
+        .onAppear {
+            // The RealityView make closure runs only once, so restart the timer here when the view reappears
+            startUpdatingPositions()
         }
         .onDisappear {
             // Invalidate timer when view disappears to prevent memory leaks
@@ -40,7 +46,9 @@ struct ImmersiveView: View {
         }
     }
 
-    private func startUpdatingPositions(sceneAnchor: AnchorEntity) {
+    private func startUpdatingPositions() {
+        // onAppear can run before the make closure has created the atom entities
+        guard sceneReady, simulationTimer == nil else { return }
         // Use 60fps interval instead of unrealistic 1ms
         simulationTimer = Timer.scheduledTimer(withTimeInterval: 1.0/60.0, repeats: true) { timer in
             lammps.step()
